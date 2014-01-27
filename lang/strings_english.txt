@@ -1,0 +1,8 @@
+<?php
+
+$s_plugin_ComsolitBacklog_ = '';
+$s_plugin_ComsolitBacklog_menuname = 'Backlog';
+$s_plugin_ComsolitBacklog_title = 'comsolit AG Priorization Backlog';
+$s_plugin_ComsolitBacklog_priorizedtitle = 'Priorized Issues';
+$s_plugin_ComsolitBacklog_unpriorizedtitle = 'Unpriorized Issues';
+$s_plugin_ComsolitBacklog_issues = 'Issues';
