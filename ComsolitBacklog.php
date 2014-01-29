@@ -49,7 +49,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
      * loads js and css resources
      */
     public function resources($p_event) {
-        $resources = '<script type="text/javascript" src="' . plugin_file( 'angularJS-v1.2.9.js' ) . '"></script> ';
+        $resources = '<script type="text/javascript" src="' . plugin_file( 'angular/angular.min.js' ) . '"></script> ';
         // '<link rel="stylesheet" type="text/css" href="' . plugin_file("backlog.css") . '" />';
 
         return $resources;
