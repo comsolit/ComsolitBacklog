@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="item in items|prioritizedItems:true" style="background-color: #ffcd85">
+        <tr ng-repeat="item in items|prioritizedItems:true|orderBy:'backlog_position'" style="background-color: #ffcd85">
           <td>{{item.summary}}</td>
           <td>{{item.backlog_position}}</td>
         </tr>
