@@ -1,8 +1,13 @@
 <?php
 
+use Comsolit\Backlog\Backlog;
+use Comsolit\Backlog\Util\EmbeddedJsonScriptTag;
+
 require_once ('core.php');
 require_once ('compress_api.php');
 require_once ('last_visited_api.php');
+require_once __DIR__ . '/../classes/Backlog.php';
+require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
 
 auth_ensure_user_authenticated();
 
@@ -31,7 +36,15 @@ $t_project_id = helper_get_current_project();
 <div>
   <h1><?php echo(plugin_lang_get( 'menuname' ));?></h1>
 
-  <?php ComsolitBacklogPrintAPI::print_bugs(); ?>
+  <?php 
+    //ComsolitBacklogPrintAPI::print_bugs();
+    $backlog = new Backlog();
+    $items = $backlog->getBacklogItems();
+    $jsonTag = EmbeddedJsonScriptTag::create('backlogItems', $items);
+    echo $jsonTag;
+
+    require __DIR__ . '/../templates/backlog.php';
+  ?>
 </div>
 
 <?php

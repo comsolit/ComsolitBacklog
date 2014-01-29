@@ -1,6 +1,11 @@
 <?php
 class ComsolitBacklogPlugin extends MantisPlugin {
 
+    private static $javaScriptResources = array(
+        'angular/angular.js',
+        'comsolitbacklog.js'
+	);
+
     function register() {
         $this->name = 'ComsolitBacklog';        // Proper name of plugin
         $this->description = '';                // Short description of the plugin
@@ -25,7 +30,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
     public function hooks() {
         return array (
             'EVENT_MENU_MAIN_FRONT' => 'add_to_main_menu',
-            'EVENT_LAYOUT_RESOURCES' => 'resources'
+            'EVENT_LAYOUT_RESOURCES' => 'printResourcesInHead'
         );
     }
 
@@ -48,10 +53,10 @@ class ComsolitBacklogPlugin extends MantisPlugin {
     /**
      * loads js and css resources
      */
-    public function resources($p_event) {
-        $resources = '<script type="text/javascript" src="' . plugin_file( 'angular/angular.min.js' ) . '"></script> ';
+    public function printResourcesInHead($p_event) {
+        foreach(self::$javaScriptResources as $javaScriptResource) {
+            echo '<script type="text/javascript" src="' , plugin_file($javaScriptResource) , '"></script>' , "\n";
+        }
         // '<link rel="stylesheet" type="text/css" href="' . plugin_file("backlog.css") . '" />';
-
-        return $resources;
     }
 }
