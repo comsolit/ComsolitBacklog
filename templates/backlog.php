@@ -10,8 +10,18 @@
           <th>backlog_position</th>
         </tr>
       </thead>
+
       <tbody>
-        <tr ng-repeat="item in items|prioritizedItems:true|orderBy:'backlog_position'" style="background-color: #ffcd85">
+         <tr style="background-color: grey;" comsolitbldroppable>
+           <td colspan="99">
+             first line
+           </td>
+        </tr>
+      </tbody>
+
+      <tbody>
+        <tr ng-repeat="item in items|prioritizedItems:true|orderBy:'backlog_position'" style="background-color: #ffcd85" comsolitbldroppable comsolitbldraggable draggable="true" data-id="{{item.id}}">
+          <td>{{item.id}}</td>
           <td>{{item.summary}}</td>
           <td>{{item.backlog_position}}</td>
         </tr>
@@ -28,7 +38,8 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="item in items|prioritizedItems:false" style="background-color: #ffcd85">
+      <tr ng-repeat="item in items|prioritizedItems:false" comsolitbldraggable draggable="true" style="background-color: #ffcd85" data-id="{{item.id}}">
+        <td>{{item.id}}</td>
         <td>{{item.summary}}</td>
         <td>{{item.backlog_position}}</td>
       </tr>

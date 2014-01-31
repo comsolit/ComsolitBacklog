@@ -1,0 +1,13 @@
+@CHARSET "UTF-8";
+
+.comsolitbldragover {
+
+}
+
+.comsolitbldragover td {
+  border-bottom: 3em solid red;
+}
+
+.comsolitbldragged {
+  opacity: 0.5;
+}

@@ -57,6 +57,6 @@ class ComsolitBacklogPlugin extends MantisPlugin {
         foreach(self::$javaScriptResources as $javaScriptResource) {
             echo '<script type="text/javascript" src="' , plugin_file($javaScriptResource) , '"></script>' , "\n";
         }
-        // '<link rel="stylesheet" type="text/css" href="' . plugin_file("backlog.css") . '" />';
+        echo '<link rel="stylesheet" type="text/css" href="' . plugin_file("comsolitbacklog.css") . '" />';
     }
 }
