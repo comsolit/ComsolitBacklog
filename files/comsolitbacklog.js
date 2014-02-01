@@ -8,7 +8,7 @@
     moveItem // function defined in comsolitBacklogCtrl
     ;
 
-  comsolitBacklog.factory('getEmbeddedData', ['$window', function($window){
+  comsolitBacklog.factory('getEmbeddedData', ['$window', function getEmbeddedDataFactory($window){
     return function(name){
       var
         context = arguments.length === 2 ? arguments[1] : 'body',
@@ -18,7 +18,7 @@
 
   }]);
 
-  comsolitBacklog.factory('getItems', ['getEmbeddedData', function(getEmbeddedData){
+  comsolitBacklog.factory('getItems', ['getEmbeddedData', function getItemsFactory(getEmbeddedData){
     return function(){
       return angular.fromJson(getEmbeddedData('backlogItems'));
     };
