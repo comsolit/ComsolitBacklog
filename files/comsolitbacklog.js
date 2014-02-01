@@ -18,14 +18,14 @@
 
   }]);
 
-  comsolitBacklog.factory('getItems', ['getEmbeddedData', function getItemsFactory(getEmbeddedData){
-    return function(){
-      return angular.fromJson(getEmbeddedData('backlogItems'));
-    };
+  comsolitBacklog.factory('backlogItems', ['getEmbeddedData', function backlogItemsFactory(getEmbeddedData){
+    return angular.fromJson(getEmbeddedData('backlogItems'));
   }]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, getItems){
-    $scope.items = getItems();
+  //comsolitBacklog.service('Backlog', ['', ]);
+
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, items){
+    $scope.items = items;
 
     moveItem = (function(){
 

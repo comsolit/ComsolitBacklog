@@ -47,4 +47,19 @@ describe("Comsolit Backlog Spec", function() {
       expect(getEmbeddedData('hi')).toEqual("hallo Welt innerHTML");
     });
   });
+
+  describe("items", function(){
+	beforeEach(function(){
+	  module('comsolitBacklog');
+	  module(function($provide){
+		$provide.constant('getEmbeddedData', function(){
+		  return "{\"hallo\": 42}";
+		});
+	  });
+	});
+
+    it("", inject(function(backlogItems){
+	  expect(backlogItems).toEqual({hallo:42});
+	}));
+  });
 });
