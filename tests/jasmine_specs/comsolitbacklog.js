@@ -222,5 +222,17 @@ describe("Comsolit Backlog Spec", function() {
       moveItems([4, 3, 2, 1, [3, 2, false]]);
 	  expectBacklog([1, 2, 3, 4]);
 	});
+
+	it("remove backlog to empty and add item again", function(){
+      moveItem(3);
+      moveItem(4);
+      removeItem(3);
+      removeItem(4);
+      moveItem(1);
+      moveItem(2,1);
+	  expectBacklog([1, 2]);
+	  expect(getItemById(1).backlog_position).toBeGreaterThan(0);
+	  expect(getItemById(2).backlog_position).toBeGreaterThan(0);
+	});
   });
 });
