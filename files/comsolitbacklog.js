@@ -1,4 +1,6 @@
 (function(){
+  "use strict";
+
   var
     cssClassDragOver = 'comsolitbldragover',
     cssClassDragged = 'comsolitbldragged',
@@ -6,16 +8,24 @@
     moveItem // function defined in comsolitBacklogCtrl
     ;
 
-  function getEmbeddedJSON(name) {
-    var context = arguments.length === 2 ? arguments[1] : 'body';
+  comsolitBacklog.factory('getEmbeddedData', ['$window', function($window){
+    return function(name){
+      var
+        context = arguments.length === 2 ? arguments[1] : 'body',
+        node = $window.document.querySelector(context + ' script.embedded-json-data[data-name="' + name + '"]');
+      return node.innerHTML;
+    };
 
-    var node = document.querySelector(context + ' script.embedded-json-data[data-name="' + name + '"]');
-    var unparsed = node.innerHTML;
-    return JSON.parse(unparsed);
-  }
+  }]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope){
-    $scope.items = getEmbeddedJSON('backlogItems');
+  comsolitBacklog.factory('getItems', ['getEmbeddedData', function(getEmbeddedData){
+    return function(){
+      return angular.fromJson(getEmbeddedData('backlogItems'));
+    };
+  }]);
+
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, getItems){
+    $scope.items = getItems();
 
     moveItem = (function(){
 
@@ -77,7 +87,6 @@
         if(dragId === dropId) return; // item dropped on itself
 
         var newPos = calcNewPos(dropPos, oldPos);
-        console.log(newPos);
         if(newPos < 0) return;
         dragItem.backlog_position = newPos;
         $scope.$apply();
