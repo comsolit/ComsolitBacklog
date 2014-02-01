@@ -158,7 +158,6 @@ describe("Comsolit Backlog Spec", function() {
 	  expectBacklog([1,2,3,4,5]);
 	});
 
-
 	it("move item on itself", function(){
       var old = {};
 	  moveItem(1);
@@ -212,7 +211,6 @@ describe("Comsolit Backlog Spec", function() {
 	  expect(moveItem(3, 1)).toBe(true);
 	  expectBacklog([4, 2, 1, 3]);
 	});
-
 
 	it("move first item in middle and new first on top", function(){
       moveItems([3, 2, 1, [1, 2]]);

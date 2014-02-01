@@ -25,19 +25,20 @@
   comsolitBacklog.service('backlog', ['backlogItems', function(backlogItems){
 	var
 	  that = this,
-	  minPos = -1, maxPos = -1, itemsById = {},
+	  minPos, maxPos, itemsById = {},
       min = function(xs){return Math.min.apply(null, xs);},
-      max = function(xs){return Math.max.apply(null, arr);};
+      max = function(xs){return Math.max.apply(null, xs);};
 
 	  that.items = backlogItems;
 
 	  for(var i=0; i < backlogItems.length; ++i) {
         var item = backlogItems[i];
         item.backlog_position = parseFloat(item.backlog_position) || 0.0;
-        if(!minPos === -1 || (item.backlog_position && item.backlog_position < minPos)) minPos = item.backlog_position;
-        if(!maxPos === -1 || (item.backlog_position && item.backlog_position > maxPos)) maxPos = item.backlog_position;
         itemsById[item.id] = item;
       }
+
+      minPos = newMin(Number.NEGATIVE_INFINITY);
+      maxPos = newMax(Number.POSITIVE_INFINITY);
 
 	  function searchNextPosition(pos) {
         var nextPos = maxPos;
@@ -70,7 +71,7 @@
         if(!dropPos) { // item dragged on the first line
           if(oldPos && oldPos === minPos) return -1; // item was already the first
           if(oldPos === maxPos) maxPos = newMax(oldPos);
-		  if(maxPos === -1) return minPos = maxPos = Math.pow(2,64); // backlog was empty
+		  if(maxPos === Number.NEGATIVE_INFINITY) return minPos = maxPos = Math.pow(2,64); // backlog was empty
           return minPos = minPos / 2;
 st      }
 
@@ -102,6 +103,9 @@ st      }
       };
 
 	  that.removeItem = function(id){
+        var oldPos = itemsById[id].backlog_position;
+        if(oldPos === maxPos) maxPos = newMax(oldPos);
+        if(oldPos === minPos) minPos = newMin(oldPos);
 		itemsById[id].backlog_position = 0;
 	  };
 	}]);
