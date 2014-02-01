@@ -22,42 +22,46 @@
     return angular.fromJson(getEmbeddedData('backlogItems'));
   }]);
 
-  //comsolitBacklog.service('Backlog', ['', ]);
+  comsolitBacklog.service('backlog', ['backlogItems', function(backlogItems){
+	var
+	  that = this,
+	  minPos = -1, maxPos = -1, itemsById = {},
+      min = function(xs){return Math.min.apply(null, xs);},
+      max = function(xs){return Math.max.apply(null, arr);};
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, items){
-    $scope.items = items;
+	  that.items = backlogItems;
 
-    moveItem = (function(){
-
-      var minPos = -1, maxPos = -1, itemsById = {};
-
-      for(var i=0; i < $scope.items.length; ++i) {
-        var item = $scope.items[i];
-        item.backlog_position = parseFloat(item.backlog_position);
+	  for(var i=0; i < backlogItems.length; ++i) {
+        var item = backlogItems[i];
+        item.backlog_position = parseFloat(item.backlog_position) || 0.0;
         if(!minPos === -1 || (item.backlog_position && item.backlog_position < minPos)) minPos = item.backlog_position;
         if(!maxPos === -1 || (item.backlog_position && item.backlog_position > maxPos)) maxPos = item.backlog_position;
         itemsById[item.id] = item;
       }
 
-      function searchNextPosition(pos) {
+	  function searchNextPosition(pos) {
         var nextPos = maxPos;
 
-        for(var i = 0; i < $scope.items.length; ++i) {
-          var itemPos = $scope.items[i].backlog_position;
+        for(var i = 0; i < backlogItems.length; ++i) {
+          var itemPos = backlogItems[i].backlog_position;
           if(itemPos < maxPos && itemPos > pos) nextPos = itemPos;
         }
 
         return nextPos;
       }
 
-      function updateMinMax(oldPos, newPos) {
-        minPos = -1;
-        maxPos = -1;
-        for(var i = 0; i < $scope.items.length; ++i) {
-          if(minPos === -1 || (item.backlog_position && item.backlog_position < minPos)) minPos = item.backlog_position;
-          if(maxPos === -1 || (item.backlog_position && item.backlog_position > maxPos)) maxPos = item.backlog_position;
-        }
-        return newPos;
+      function positions(){
+        return backlogItems
+          .map(function(x){return x.backlog_position;})
+          .filter(function(x){return x>0;});
+      }
+
+      function newMax(oldMax){
+        return max(positions().filter(function(x){return x<oldMax;}));
+      }
+
+      function newMin(oldMin){
+        return min(positions().filter(function(x){return x>oldMin;}));
       }
 
       function calcNewPos(dropPos, oldPos) {
@@ -65,40 +69,52 @@
 
         if(!dropPos) { // item dragged on the first line
           if(oldPos && oldPos === minPos) return -1; // item was already the first
-          return updateMinMax(oldPos, minPos > 0 ? minPos / 2 : Math.pow(2,64));
-        }
+          if(oldPos === maxPos) maxPos = newMax(oldPos);
+		  if(maxPos === -1) return minPos = maxPos = Math.pow(2,64); // backlog was empty
+          return minPos = minPos / 2;
+st      }
 
         if(dropPos === maxPos) {  // item dropped on the last item
-          return updateMinMax(oldPos, maxPos * 2);
+          if(oldPos === minPos) minPos = newMin(oldPos);
+          return maxPos = maxPos * 2;
         }
 
         var nextPosition = searchNextPosition(dropPos);
         if(nextPosition === oldPos) return -1; // item dropped on the item before itself
+        if(oldPos === maxPos) maxPos = newMax(oldPos);
+        if(oldPos === minPos) minPos = newMin(oldPos);
         return (dropPos + nextPosition) / 2;
       }
 
-      return function(dragId, dropId){
+      that.moveItem = function(dragId, dropId){
         var
           dragItem = itemsById[dragId],
           oldPos = dragItem.backlog_position,
           dropItem = dropId && itemsById[dropId],
           dropPos = dropItem && dropItem.backlog_position;
 
-        if(dragId === dropId) return; // item dropped on itself
+        if(dragId === dropId) return false; // item dropped on itself
 
         var newPos = calcNewPos(dropPos, oldPos);
-        if(newPos < 0) return;
+        if(newPos < 0) return false;
         dragItem.backlog_position = newPos;
-        $scope.$apply();
+		return true;
       };
-    })();
 
+	  that.removeItem = function(id){
+		itemsById[id].backlog_position = 0;
+	  };
+	}]);
+
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlogItems){
+    $scope.items = backlogItems.items;
+	$scope.backlog = backlogItems;
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){
     var filters = {
-      'false': function(x){return 0.0 === parseFloat(x.backlog_position)},
-      'true': function(x){return parseFloat(x.backlog_position) > 0}
+      'false': function(x){return 0.0 === parseFloat(x.backlog_position);},
+      'true': function(x){return parseFloat(x.backlog_position) > 0;}
     };
     return function(items, prioritized){
       var filter = filters[prioritized];
@@ -122,10 +138,10 @@
         target.removeClass(cssClassDragged);
       });
 
-    }
+    };
   });
 
-  comsolitBacklog.directive('comsolitbldroppable', function() {
+  comsolitBacklog.directive('comsolitbldroppable', function(backlogItems) {
     return function(scope, element) {
 
       element.on('dragenter', function(e){
@@ -152,8 +168,8 @@
 
         target.removeClass(cssClassDragOver);
 
-        moveItem(dragId, dropId);
+        backlogItems.moveItem(dragId, dropId);
       });
-    }
+    };
   });
 })();
