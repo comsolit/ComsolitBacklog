@@ -17,7 +17,7 @@
     return angular.fromJson(getEmbeddedData('backlogItems'));
   }]);
 
-  comsolitBacklog.service('backlog', ['backlogItems', function(backlogItems){
+  comsolitBacklog.service('backlog', ['backlogItems', '$log', function(backlogItems, $log){
 	var
 	  minPos, maxPos, itemsById = {},
       min = function(xs){return Math.min.apply(null, xs);},
@@ -53,6 +53,7 @@
       }
 
       function rebalance(){
+        $log.debug('backlog.rebalance()');
         var newPos = 0;
         angular.forEach(
           backlogItems.filter(isPrioritized).sort(function(a,b){return a.backlog_position - b.backlog_position;}),
@@ -65,6 +66,7 @@
       }
 
       function calcNewPos(dropPos, oldPos) {
+        $log.debug('backlog.calcNewPos(dropPos:' + dropPos + ', oldPos:' + oldPos + ')');
         var newPos;
 
         if(!dropPos) { // item dragged on the first line
@@ -87,6 +89,7 @@ st      }
       }
 
       this.moveItem = function(dragId, dropId){
+        $log.debug('backlog.moveItem(dragId: ' + dragId + ', dropId: ' + dropId + ')');
         var
           dragItem = itemsById[dragId],
           oldPos = dragItem.backlog_position,
@@ -103,6 +106,7 @@ st      }
       };
 
 	  this.removeItem = function(id){
+        $log.debug('backlog.removeItem(id: ' + id + ')');
         var oldPos = itemsById[id].backlog_position;
         if(oldPos === maxPos) maxPos = newMax(oldPos);
         if(oldPos === minPos) minPos = newMin(oldPos);
@@ -110,7 +114,7 @@ st      }
 	  };
 	}]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog){
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, $log){
 
     var postQueue = [];
 
@@ -145,8 +149,8 @@ st      }
     }
 
     function post(action){
+      $log.info('post ' + angular.toJson(action));
       // TODO
-      if(console && console.log) console.log(action);
     }
 
     // TODO remove from scope, is here just for testing
