@@ -130,7 +130,7 @@ st      }
     };
   });
 
-  comsolitBacklog.directive('comsolitbldraggable', function() {
+  comsolitBacklog.directive('comsolitBacklogDraggable', function() {
     return function(scope, element) {
 
       element.on('dragstart', function(e){
@@ -149,7 +149,7 @@ st      }
     };
   });
 
-  comsolitBacklog.directive('comsolitbldroppable', function() {
+  comsolitBacklog.directive('comsolitBacklogDroppable', function() {
     return function(scope, element) {
 
       element.on('dragenter', function(e){
