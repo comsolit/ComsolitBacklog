@@ -40,10 +40,14 @@
       minPos = newMin(Number.NEGATIVE_INFINITY);
       maxPos = newMax(Number.POSITIVE_INFINITY);
 
+      function isPrioritized(x){
+        return x.backlog_position > 0;
+      }
+
       function positions(){
         return backlogItems
-          .map(function(x){return x.backlog_position;})
-          .filter(function(x){return x>0;});
+          .filter(isPrioritized)
+          .map(function(x){return x.backlog_position;});
       }
 
       function newMax(oldMax){
@@ -54,26 +58,38 @@
         return min(positions().filter(function(x){return x>oldMin;}));
       }
 
+      function rebalance(){
+        var newPos = 0;
+        angular.forEach(
+          backlogItems.filter(isPrioritized).sort(function(a,b){return a.backlog_position - b.backlog_position;}),
+          function(v){
+            v.backlog_position = newPos = newPos + Math.pow(2, 16);
+          }
+        );
+        minPos = newMin(Number.NEGATIVE_INFINITY);
+        maxPos = newMax(Number.POSITIVE_INFINITY);
+      }
+
       function calcNewPos(dropPos, oldPos) {
         var newPos;
 
         if(!dropPos) { // item dragged on the first line
           if(oldPos && oldPos === minPos) return -1; // item was already the first
           if(oldPos === maxPos) maxPos = newMax(oldPos);
-		  if(maxPos === Number.NEGATIVE_INFINITY) return minPos = maxPos = Math.pow(2,64); // backlog was empty
-          return minPos = minPos / 2;
+		  if(maxPos === Number.NEGATIVE_INFINITY) return [minPos = maxPos = Math.pow(2, 16), false]; // backlog was empty
+          return [minPos = minPos / 2, minPos < 1];
 st      }
 
         if(dropPos === maxPos) {  // item dropped on the last item
           if(oldPos === minPos) minPos = newMin(oldPos);
-          return maxPos = maxPos * 2;
+          return [maxPos = maxPos + 2048, maxPos > Math.pow(2, 32)];
         }
 
         var nextPosition = newMin(dropPos);
         if(nextPosition === oldPos) return -1; // item dropped on the item before itself
         if(oldPos === maxPos) maxPos = newMax(oldPos);
         if(oldPos === minPos) minPos = newMin(oldPos);
-        return (dropPos + nextPosition) / 2;
+        return [(dropPos + nextPosition) / 2, Math.abs(dropPos - nextPosition) < 1];
       }
 
       that.moveItem = function(dragId, dropId){
@@ -87,7 +103,8 @@ st      }
 
         var newPos = calcNewPos(dropPos, oldPos);
         if(newPos < 0) return false;
-        dragItem.backlog_position = newPos;
+        dragItem.backlog_position = newPos[0];
+        if(newPos[1]) rebalance();
 		return true;
       };
 
