@@ -15,10 +15,10 @@ describe("Comsolit Backlog Spec", function() {
 
     beforeEach(function(){
       querySelectorMock = jasmine.createSpy("querySelectorSpy").andReturn({innerHTML: "hallo Welt innerHTML"});
-      var windowMock = {document: {querySelector: querySelectorMock}};
+      var documentMock = [{querySelector: querySelectorMock}];
 
       module(function($provide){
-        $provide.value('$window', windowMock);
+        $provide.value('$document', documentMock);
       });
 
       inject(function(_getEmbeddedData_){

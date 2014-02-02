@@ -8,11 +8,11 @@
     moveItem // function defined in comsolitBacklogCtrl
     ;
 
-  comsolitBacklog.factory('getEmbeddedData', ['$window', function getEmbeddedDataFactory($window){
+  comsolitBacklog.factory('getEmbeddedData', ['$document', function getEmbeddedDataFactory($document){
     return function(name){
       var
         context = arguments.length === 2 ? arguments[1] : 'body',
-        node = $window.document.querySelector(context + ' script.embedded-json-data[data-name="' + name + '"]');
+        node = $document[0].querySelector(context + ' script.embedded-json-data[data-name="' + name + '"]');
       return node.innerHTML;
     };
 
