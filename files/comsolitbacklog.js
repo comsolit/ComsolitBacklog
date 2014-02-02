@@ -40,17 +40,6 @@
       minPos = newMin(Number.NEGATIVE_INFINITY);
       maxPos = newMax(Number.POSITIVE_INFINITY);
 
-	  function searchNextPosition(pos) {
-        var nextPos = maxPos;
-
-        for(var i = 0; i < backlogItems.length; ++i) {
-          var itemPos = backlogItems[i].backlog_position;
-          if(itemPos < maxPos && itemPos > pos) nextPos = itemPos;
-        }
-
-        return nextPos;
-      }
-
       function positions(){
         return backlogItems
           .map(function(x){return x.backlog_position;})
@@ -80,7 +69,7 @@ st      }
           return maxPos = maxPos * 2;
         }
 
-        var nextPosition = searchNextPosition(dropPos);
+        var nextPosition = newMin(dropPos);
         if(nextPosition === oldPos) return -1; // item dropped on the item before itself
         if(oldPos === maxPos) maxPos = newMax(oldPos);
         if(oldPos === minPos) minPos = newMin(oldPos);
