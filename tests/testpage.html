@@ -1,7 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Backlog testpage</title>
     <script type="text/javascript" src="../files/angular/angular.js"></script>
     <script type="text/javascript" src="../files/comsolitbacklog.js"></script>
     <style>
@@ -45,6 +46,15 @@
     <h1>prioritized items</h1>
     <div>
       <table style="width:100%" cellspacing="1">
+        <thead>
+          <tr>
+            <th>nr</th>
+            <th>id</th>
+            <th>summary</th>
+            <th>backlog_position (test)</th>
+            <th>action</th>
+          </tr>
+        </thead>
         <tbody>
           <tr comsolit-backlog-droppable="comsolitbldragover">
             <td colspan="99" style="min-heigth:2em;background-color:grey">first line</td>
@@ -53,10 +63,11 @@
 
         <tbody>
           <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:true|orderBy:'backlog_position'" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
+            <td ng-bind="$index + 1"></td>
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
             <td ng-bind="item.backlog_position"></td>
-            <td><button ng-click="removeItem(item.id)">remove</butto<n</td>
+            <td style="width:10em"><button ng-click="removeItem(item.id)">remove</button></td>
           </tr>
         </tbody>
 
@@ -64,14 +75,15 @@
     </div>
 
     <h1>unprioritized items</h1>
+    Filter <input type="text" ng-model="unprioritizedTextFilter" /> <button ng-click="unprioritizedTextFilter=''">reset</button>
     <div>
       <table style="width:100%">
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:false"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:false|filter:unprioritizedTextFilter"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
             <td ng-bind="item.backlog_position"></td>
-            <td><button ng-click="moveItem(item.id)">to first position</butto<n</td>
+            <td style="width:10em"><button ng-click="moveItem(item.id)">to first position</button></td>
           </tr>
         </tbody>
       </table
@@ -79,12 +91,16 @@
 
     <script class="embedded-json-data" data-name="backlogItems" type="text/json">
       [
-        {"id": 1, "backlog_position": 1, "summary": "hallo welt 1"},
-        {"id": 2, "backlog_position": 2, "summary": "hallo welt 2"},
-        {"id": 3, "backlog_position": 3, "summary": "hallo welt 3"},
-        {"id": 4, "backlog_position": 4, "summary": "hallo welt 4"},
-        {"id": 5, "backlog_position": 0, "summary": "hallo welt 5"},
-        {"id": 6, "backlog_position": 0, "summary": "hallo welt 6"}
+        {"id": 1, "backlog_position": 1, "summary": "hallo welt"},
+        {"id": 2, "backlog_position": 2, "summary": "backlog bauen"},
+        {"id": 3, "backlog_position": 3, "summary": "aufräumen"},
+        {"id": 4, "backlog_position": 4, "summary": "essen kochen"},
+        {"id": 5, "backlog_position": 2.5, "summary": "däumchen drehen"},
+        {"id": 6, "backlog_position": "3.1", "summary": "trainieren"},
+        {"id": 7, "backlog_position": 99, "summary": "angularJS lernen"},
+        {"id": 8, "backlog_position": 0, "summary": "Internet Explorer 6 testen"},
+        {"id": 9, "backlog_position": 0, "summary": "Bier trinken"},
+        {"id": 10, "backlog_position": 0, "summary": "spazieren gehen"}
       ]
     </script>
   </body>
