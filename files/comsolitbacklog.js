@@ -146,7 +146,7 @@ st      }
 
     function post(action){
       // TODO
-      console.log(action);
+      if(console && console.log) console.log(action);
     }
 
     // TODO remove from scope, is here just for testing
