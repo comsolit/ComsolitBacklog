@@ -145,7 +145,7 @@ st      }
     };
   });
 
-  comsolitBacklog.directive('comsolitBacklogDroppable', function() {
+  comsolitBacklog.directive('comsolitBacklogDroppable', function(backlog) {
     return function(scope, element, attributes) {
       var cssClassDragOver = attributes['comsolitBacklogDroppable'];
 
@@ -173,7 +173,7 @@ st      }
 
         target.removeClass(cssClassDragOver);
 
-        var takeAction = scope.backlog.moveItem(dragId, dropId);
+        var takeAction = backlog.moveItem(dragId, dropId);
         if(takeAction) {
           scope.$apply();
           // initiate POST request
