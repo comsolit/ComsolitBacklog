@@ -111,7 +111,21 @@ st      }
 	}]);
 
   comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog){
-	$scope.backlog = backlog;
+
+	$scope.backlogItems = backlog.items;
+
+    $scope.moveItem = function(dragId, dropId){
+      var result = backlog.moveItem(dragId, dropId);
+      if(result) {
+        // post to Server
+      }
+      return result;
+    };
+
+    $scope.removeItem = function(id){
+      backlog.removeItem(id);
+    };
+
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){
@@ -141,11 +155,10 @@ st      }
         var target = angular.element(e.target);
         target.removeClass(cssClassDragged);
       });
-
     };
   });
 
-  comsolitBacklog.directive('comsolitBacklogDroppable', function(backlog) {
+  comsolitBacklog.directive('comsolitBacklogDroppable', function() {
     return function(scope, element, attributes) {
       var cssClassDragOver = attributes['comsolitBacklogDroppable'];
 
@@ -173,11 +186,8 @@ st      }
 
         target.removeClass(cssClassDragOver);
 
-        var takeAction = backlog.moveItem(dragId, dropId);
-        if(takeAction) {
-          scope.$apply();
-          // initiate POST request
-        }
+        var takeAction = scope.moveItem(dragId, dropId);
+        if(takeAction) scope.$apply();
       });
     };
   });
