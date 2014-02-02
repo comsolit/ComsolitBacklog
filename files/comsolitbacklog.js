@@ -1,12 +1,7 @@
 (function(){
   "use strict";
 
-  var
-    cssClassDragOver = 'comsolitbldragover',
-    cssClassDragged = 'comsolitbldragged',
-    comsolitBacklog = angular.module('comsolitBacklog', ['ng']),
-    moveItem // function defined in comsolitBacklogCtrl
-    ;
+  var comsolitBacklog = angular.module('comsolitBacklog', ['ng']);
 
   comsolitBacklog.factory('getEmbeddedData', ['$document', function getEmbeddedDataFactory($document){
     return function(name){
@@ -131,7 +126,8 @@ st      }
   });
 
   comsolitBacklog.directive('comsolitBacklogDraggable', function() {
-    return function(scope, element) {
+    return function(scope, element, attributes) {
+      var cssClassDragged = attributes['comsolitBacklogDraggable'];
 
       element.on('dragstart', function(e){
         var target = angular.element(e.target);
@@ -150,7 +146,8 @@ st      }
   });
 
   comsolitBacklog.directive('comsolitBacklogDroppable', function() {
-    return function(scope, element) {
+    return function(scope, element, attributes) {
+      var cssClassDragOver = attributes['comsolitBacklogDroppable'];
 
       element.on('dragenter', function(e){
         var target = angular.element(this);

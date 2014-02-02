@@ -28,7 +28,7 @@
         </tbody>
 
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlog['items']|prioritizedItems:true|orderBy:'backlog_position'" comsolit-backlog-draggable comsolit-backlog-droppable draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in backlog['items']|prioritizedItems:true|orderBy:'backlog_position'"w comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
             <td ng-bind="item.backlog_position"></td>
@@ -43,7 +43,7 @@
     <div>
       <table style="width:100%">
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlog['items']|prioritizedItems:false" comsolit-backlog-draggable draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in backlog['items']|prioritizedItems:false"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
             <td ng-bind="item.backlog_position"></td>
