@@ -112,20 +112,45 @@ st      }
 
   comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog){
 
+    var postQueue = [];
+
 	$scope.backlogItems = backlog.items;
+    $scope.postQueue = postQueue;
 
     $scope.moveItem = function(dragId, dropId){
       var result = backlog.moveItem(dragId, dropId);
-      if(result) {
-        // post to Server
-      }
+      if(result) queue({
+          action: 'move',
+          dragId: dragId,
+          dropId: dropId
+      });
       return result;
     };
 
     $scope.removeItem = function(id){
       backlog.removeItem(id);
+      queue({
+        action: 'remove',
+        id: id
+      });
     };
 
+    function queue(action){
+      if(postQueue.push(action) === 1) post(action);
+    }
+
+    function postSuccess(){
+      postQueue.shift();
+      if(postQueue.length) post(postQueue[0]);
+    }
+
+    function post(action){
+      // TODO
+      console.log(action);
+    }
+
+    // TODO remove from scope, is here just for testing
+    $scope.success = postSuccess;
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){

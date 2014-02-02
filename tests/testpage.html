@@ -13,22 +13,46 @@
         opacity: 0.4;
       }
 
+      .move {
+        background-color: green;
+      }
+
+      .remove {
+        background-color: red;
+      }
+
+      .action {
+        color: white;
+        margin: 1px .1em;
+      }
     </style>
   </head>
 
   <body ng-app="comsolitBacklog" ng-controller="comsolitBacklogCtrl">
 
+    Queue ({{postQueue.length}}):
+    <div style="min-height:4em" style="border: 1px solid black">
+      <span ng-repeat="a in postQueue">
+        <span ng-if="a.action === 'move'" class="move action">
+          <span>move {{a.dragId}}</span>
+          <span ng-if="a.dropId">under {{a.dropId}}</span>
+        </span>
+        <span ng-if="a.action === 'remove'" class="remove action">remove {{a.id}}</span>
+      </span>
+    </div>
+    <button ng-click="success()">success!</button>
+
     <h1>prioritized items</h1>
     <div>
       <table style="width:100%" cellspacing="1">
         <tbody>
-          <tr comsolit-backlog-droppable>
+          <tr comsolit-backlog-droppable="comsolitbldragover">
             <td colspan="99" style="min-heigth:2em;background-color:grey">first line</td>
           </tr>
         </tbody>
 
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:true|orderBy:'backlog_position'"w comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:true|orderBy:'backlog_position'" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
             <td ng-bind="item.backlog_position"></td>
@@ -52,7 +76,6 @@
         </tbody>
       </table
     </div>
-
 
     <script class="embedded-json-data" data-name="backlogItems" type="text/json">
       [
