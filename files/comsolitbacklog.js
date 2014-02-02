@@ -24,12 +24,11 @@
 
   comsolitBacklog.service('backlog', ['backlogItems', function(backlogItems){
 	var
-	  that = this,
 	  minPos, maxPos, itemsById = {},
       min = function(xs){return Math.min.apply(null, xs);},
       max = function(xs){return Math.max.apply(null, xs);};
 
-	  that.items = backlogItems;
+	  this.items = backlogItems;
 
 	  for(var i=0; i < backlogItems.length; ++i) {
         var item = backlogItems[i];
@@ -92,7 +91,7 @@ st      }
         return [(dropPos + nextPosition) / 2, Math.abs(dropPos - nextPosition) < 1];
       }
 
-      that.moveItem = function(dragId, dropId){
+      this.moveItem = function(dragId, dropId){
         var
           dragItem = itemsById[dragId],
           oldPos = dragItem.backlog_position,
@@ -108,7 +107,7 @@ st      }
 		return true;
       };
 
-	  that.removeItem = function(id){
+	  this.removeItem = function(id){
         var oldPos = itemsById[id].backlog_position;
         if(oldPos === maxPos) maxPos = newMax(oldPos);
         if(oldPos === minPos) minPos = newMin(oldPos);
@@ -116,9 +115,8 @@ st      }
 	  };
 	}]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlogItems){
-    $scope.items = backlogItems.items;
-	$scope.backlog = backlogItems;
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog){
+	$scope.backlog = backlog;
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){
@@ -151,7 +149,7 @@ st      }
     };
   });
 
-  comsolitBacklog.directive('comsolitbldroppable', function(backlogItems) {
+  comsolitBacklog.directive('comsolitbldroppable', function() {
     return function(scope, element) {
 
       element.on('dragenter', function(e){
@@ -178,7 +176,11 @@ st      }
 
         target.removeClass(cssClassDragOver);
 
-        backlogItems.moveItem(dragId, dropId);
+        var takeAction = scope.backlog.moveItem(dragId, dropId);
+        if(takeAction) {
+          scope.$apply();
+          // initiate POST request
+        }
       });
     };
   });
