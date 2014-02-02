@@ -43,7 +43,7 @@
     </div>
     <button ng-click="success()">success!</button>
 
-    <h1>prioritized items</h1>
+    <h1>prioritized items ({{itemsInBacklog.length}})</h1>
     <div>
       <table style="width:100%" cellspacing="1">
         <thead>
@@ -51,6 +51,7 @@
             <th>nr</th>
             <th>id</th>
             <th>summary</th>
+            <th>points</th>
             <th>backlog_position (test)</th>
             <th>action</th>
           </tr>
@@ -61,27 +62,36 @@
           </tr>
         </tbody>
 
+        <tfoot>
+          <tr>
+            <td>
+            </td>
+          </tr>
+        </tfoot>
+
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:true|orderBy:'backlog_position'" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in (itemsInBacklog = (backlogItems|prioritizedItems:true))|orderBy:'backlog_position' track by item.id" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
             <td ng-bind="$index + 1"></td>
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
+            <td ng-bind="item.points"></td>
             <td ng-bind="item.backlog_position"></td>
             <td style="width:10em"><button ng-click="removeItem(item.id)">remove</button></td>
           </tr>
         </tbody>
 
-      </table
+      </table>
     </div>
 
-    <h1>unprioritized items</h1>
+    <h1>unprioritized items ({{itemsNotInBacklog.length}})</h1>
     Filter <input type="text" ng-model="unprioritizedTextFilter" /> <button ng-click="unprioritizedTextFilter=''">reset</button>
     <div>
       <table style="width:100%">
         <tbody>
-          <tr style="background-color:green" ng-repeat="item in backlogItems|prioritizedItems:false|filter:unprioritizedTextFilter"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
+          <tr style="background-color:green" ng-repeat="item in (itemsNotInBacklog = (backlogItems|prioritizedItems:false))|filter:unprioritizedTextFilter track by item.id"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
             <td ng-bind="item.id"></td>
             <td ng-bind="item.summary"></td>
+            <td ng-bind="item.points"></td>
             <td ng-bind="item.backlog_position"></td>
             <td style="width:10em"><button ng-click="moveItem(item.id)">to first position</button></td>
           </tr>
@@ -91,16 +101,16 @@
 
     <script class="embedded-json-data" data-name="backlogItems" type="text/json">
       [
-        {"id": 1, "backlog_position": 1, "summary": "hallo welt"},
-        {"id": 2, "backlog_position": 2, "summary": "backlog bauen"},
-        {"id": 3, "backlog_position": 3, "summary": "aufräumen"},
-        {"id": 4, "backlog_position": 4, "summary": "essen kochen"},
-        {"id": 5, "backlog_position": 2.5, "summary": "däumchen drehen"},
-        {"id": 6, "backlog_position": "3.1", "summary": "trainieren"},
-        {"id": 7, "backlog_position": 99, "summary": "angularJS lernen"},
-        {"id": 8, "backlog_position": 0, "summary": "Internet Explorer 6 testen"},
-        {"id": 9, "backlog_position": 0, "summary": "Bier trinken"},
-        {"id": 10, "backlog_position": 0, "summary": "spazieren gehen"}
+        {"id": 1, "backlog_position": 1,     "points": 1, "summary": "hallo welt"},
+        {"id": 2, "backlog_position": 2,     "points": 13, "summary": "backlog bauen"},
+        {"id": 3, "backlog_position": 3,     "points": 4, "summary": "aufräumen"},
+        {"id": 4, "backlog_position": 4,     "points": 13, "summary": "essen kochen"},
+        {"id": 5, "backlog_position": 2.5,   "points": 3, "summary": "däumchen drehen"},
+        {"id": 6, "backlog_position": "3.1", "points": 8, "summary": "trainieren"},
+        {"id": 7, "backlog_position": 99,    "points": 20, "summary": "angularJS lernen"},
+        {"id": 8, "backlog_position": 0,     "points": 40, "summary": "Internet Explorer 6 testen"},
+        {"id": 9, "backlog_position": 0,     "points": 13, "summary": "Bier trinken"},
+        {"id": 10, "backlog_position": 0,    "points": 1, "summary": "spazieren gehen"}
       ]
     </script>
   </body>
