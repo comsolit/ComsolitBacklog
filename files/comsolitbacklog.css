@@ -11,3 +11,16 @@
 .comsolitbldragged {
   opacity: 0.5;
 }
+
+.move {
+  background-color: green;
+}
+
+.remove {
+  background-color: red;
+}
+
+.action {
+  color: white;
+  margin: 1px .1em;
+}
