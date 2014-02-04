@@ -18,107 +18,107 @@
   }]);
 
   comsolitBacklog.service('backlog', ['backlogItems', '$log', function(backlogItems, $log){
-	var
-	  minPos, maxPos, itemsById = {},
+    var
+      minPos, maxPos, itemsById = {},
       min = function(xs){return Math.min.apply(null, xs);},
       max = function(xs){return Math.max.apply(null, xs);};
 
-	  this.items = backlogItems;
+    this.items = backlogItems;
 
-	  for(var i=0; i < backlogItems.length; ++i) {
-        var item = backlogItems[i];
-        item.backlog_position = parseFloat(item.backlog_position) || 0.0;
-        itemsById[item.id] = item;
-      }
+    for(var i=0; i < backlogItems.length; ++i) {
+      var item = backlogItems[i];
+      item.backlog_position = parseFloat(item.backlog_position) || 0.0;
+      itemsById[item.id] = item;
+    }
 
+    minPos = newMin(Number.NEGATIVE_INFINITY);
+    maxPos = newMax(Number.POSITIVE_INFINITY);
+
+    function isPrioritized(x){
+      return x.backlog_position > 0;
+    }
+
+    function positions(){
+      return backlogItems
+        .filter(isPrioritized)
+        .map(function(x){return x.backlog_position;});
+    }
+
+    function newMax(oldMax){
+      return max(positions().filter(function(x){return x<oldMax;}));
+    }
+
+    function newMin(oldMin){
+      return min(positions().filter(function(x){return x>oldMin;}));
+    }
+
+    function rebalance(){
+      $log.debug('backlog.rebalance()');
+      var newPos = 0;
+      angular.forEach(
+        backlogItems.filter(isPrioritized).sort(function(a,b){return a.backlog_position - b.backlog_position;}),
+        function(v){
+          v.backlog_position = newPos = newPos + Math.pow(2, 16);
+        }
+      );
       minPos = newMin(Number.NEGATIVE_INFINITY);
       maxPos = newMax(Number.POSITIVE_INFINITY);
+    }
 
-      function isPrioritized(x){
-        return x.backlog_position > 0;
-      }
+    function calcNewPos(dropPos, oldPos) {
+      $log.debug('backlog.calcNewPos(dropPos:' + dropPos + ', oldPos:' + oldPos + ')');
+      var newPos;
 
-      function positions(){
-        return backlogItems
-          .filter(isPrioritized)
-          .map(function(x){return x.backlog_position;});
-      }
-
-      function newMax(oldMax){
-        return max(positions().filter(function(x){return x<oldMax;}));
-      }
-
-      function newMin(oldMin){
-        return min(positions().filter(function(x){return x>oldMin;}));
-      }
-
-      function rebalance(){
-        $log.debug('backlog.rebalance()');
-        var newPos = 0;
-        angular.forEach(
-          backlogItems.filter(isPrioritized).sort(function(a,b){return a.backlog_position - b.backlog_position;}),
-          function(v){
-            v.backlog_position = newPos = newPos + Math.pow(2, 16);
-          }
-        );
-        minPos = newMin(Number.NEGATIVE_INFINITY);
-        maxPos = newMax(Number.POSITIVE_INFINITY);
-      }
-
-      function calcNewPos(dropPos, oldPos) {
-        $log.debug('backlog.calcNewPos(dropPos:' + dropPos + ', oldPos:' + oldPos + ')');
-        var newPos;
-
-        if(!dropPos) { // item dragged on the first line
-          if(oldPos && oldPos === minPos) return -1; // item was already the first
-          if(oldPos === maxPos) maxPos = newMax(oldPos);
-		  if(maxPos === Number.NEGATIVE_INFINITY) return [minPos = maxPos = Math.pow(2, 16), false]; // backlog was empty
-          return [minPos = minPos / 2, minPos < 1];
-st      }
-
-        if(dropPos === maxPos) {  // item dropped on the last item
-          if(oldPos === minPos) minPos = newMin(oldPos);
-          return [maxPos = maxPos + 2048, maxPos > Math.pow(2, 32)];
-        }
-
-        var nextPosition = newMin(dropPos);
-        if(nextPosition === oldPos) return -1; // item dropped on the item before itself
+      if(!dropPos) { // item dragged on the first line
+        if(oldPos && oldPos === minPos) return -1; // item was already the first
         if(oldPos === maxPos) maxPos = newMax(oldPos);
-        if(oldPos === minPos) minPos = newMin(oldPos);
-        return [(dropPos + nextPosition) / 2, Math.abs(dropPos - nextPosition) < 1];
+        if(maxPos === Number.NEGATIVE_INFINITY) return [minPos = maxPos = Math.pow(2, 16), false]; // backlog was empty
+        return [minPos = minPos / 2, minPos < 1];
       }
 
-      this.moveItem = function(dragId, dropId){
-        $log.debug('backlog.moveItem(dragId: ' + dragId + ', dropId: ' + dropId + ')');
-        var
-          dragItem = itemsById[dragId],
-          oldPos = dragItem.backlog_position,
-          dropItem = dropId && itemsById[dropId],
-          dropPos = dropItem && dropItem.backlog_position;
-
-        if(dragId === dropId) return false; // item dropped on itself
-
-        var newPos = calcNewPos(dropPos, oldPos);
-        if(newPos < 0) return false;
-        dragItem.backlog_position = newPos[0];
-        if(newPos[1]) rebalance();
-		return true;
-      };
-
-	  this.removeItem = function(id){
-        $log.debug('backlog.removeItem(id: ' + id + ')');
-        var oldPos = itemsById[id].backlog_position;
-        if(oldPos === maxPos) maxPos = newMax(oldPos);
+      if(dropPos === maxPos) {  // item dropped on the last item
         if(oldPos === minPos) minPos = newMin(oldPos);
-		itemsById[id].backlog_position = 0;
-	  };
-	}]);
+        return [maxPos = maxPos + 2048, maxPos > Math.pow(2, 32)];
+      }
+
+      var nextPosition = newMin(dropPos);
+      if(nextPosition === oldPos) return -1; // item dropped on the item before itself
+      if(oldPos === maxPos) maxPos = newMax(oldPos);
+      if(oldPos === minPos) minPos = newMin(oldPos);
+      return [(dropPos + nextPosition) / 2, Math.abs(dropPos - nextPosition) < 1];
+    }
+
+    this.moveItem = function(dragId, dropId){
+      $log.debug('backlog.moveItem(dragId: ' + dragId + ', dropId: ' + dropId + ')');
+      var
+        dragItem = itemsById[dragId],
+        oldPos = dragItem.backlog_position,
+        dropItem = dropId && itemsById[dropId],
+        dropPos = dropItem && dropItem.backlog_position;
+
+      if(dragId === dropId) return false; // item dropped on itself
+
+      var newPos = calcNewPos(dropPos, oldPos);
+      if(newPos < 0) return false;
+      dragItem.backlog_position = newPos[0];
+      if(newPos[1]) rebalance();
+      return true;
+    };
+
+    this.removeItem = function(id){
+      $log.debug('backlog.removeItem(id: ' + id + ')');
+      var oldPos = itemsById[id].backlog_position;
+      if(oldPos === maxPos) maxPos = newMax(oldPos);
+      if(oldPos === minPos) minPos = newMin(oldPos);
+      itemsById[id].backlog_position = 0;
+    };
+  }]);
 
   comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, $log, $http){
 
     var postQueue = [];
 
-	$scope.backlogItems = backlog.items;
+    $scope.backlogItems = backlog.items;
     $scope.postQueue = postQueue;
 
     $scope.moveItem = function(dragId, dropId){
