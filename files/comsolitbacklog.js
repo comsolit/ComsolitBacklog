@@ -114,40 +114,18 @@
     };
   }]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, $log, $http){
+  comsolitBacklog.service('postQueue', function($http, $log){
+    var queue = this.queue = []
 
-    var postQueue = [];
-
-    $scope.backlogItems = backlog.items;
-    $scope.postQueue = postQueue;
-
-    $scope.moveItem = function(dragId, dropId){
-      var result = backlog.moveItem(dragId, dropId);
-      if(result) queue({
-          action: 'move',
-          dragId: dragId,
-          dropId: dropId || null // the dropId property is not serialized for value 'undefined'
-      });
-      return result;
-    };
-
-    $scope.removeItem = function(id){
-      backlog.removeItem(id);
-      queue({
-        action: 'remove',
-        id: id
-      });
-    };
-
-    function queue(action){
-      if(postQueue.push(action) === 1) post(action);
+    this.push = function(action){
+      if(queue.push(action) === 1) post(action);
     }
 
     function postSuccess(data, status, headers, config){
       // TODO: mantis does not send a correct http error code, so we still might need to check for a mantis error page here
       console.log('postSuccess. data: ' + data);
-      postQueue.shift();
-      if(postQueue.length) post(postQueue[0]);
+      queue.shift();
+      if(queue.length) post(queue[0]);
     }
 
     function postError(data, status, headers){
@@ -155,6 +133,9 @@
       $log.error(headers);
       $log.error(data);
       // TODO: display a modal with all error details to the user and ask him to reload the page
+      // maybe trigger an angular event here and have a directive observe this event?
+      // this would imply that the controller hands the scope over to this service
+      // a service can not get a scope via dependency injection
     }
 
     function post(action){
@@ -164,6 +145,30 @@
         action
       ).success(postSuccess).error(postError);
     }
+  });
+
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, postQueue){
+
+    $scope.backlogItems = backlog.items;
+    $scope.postQueue = postQueue.queue;
+
+    $scope.moveItem = function(dragId, dropId){
+      var result = backlog.moveItem(dragId, dropId);
+      if(result) postQueue.push({
+          action: 'move',
+          dragId: dragId,
+          dropId: dropId || null // the dropId property is not serialized for value 'undefined'
+      });
+      return result;
+    };
+
+    $scope.removeItem = function(id){
+      backlog.removeItem(id);
+      postQueue.push({
+        action: 'remove',
+        id: id
+      });
+    };
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){
