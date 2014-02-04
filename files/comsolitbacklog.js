@@ -126,7 +126,7 @@ st      }
       if(result) queue({
           action: 'move',
           dragId: dragId,
-          dropId: dropId
+          dropId: dropId || null // the dropId property is not serialized for value 'undefined'
       });
       return result;
     };
