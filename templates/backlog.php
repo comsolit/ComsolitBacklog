@@ -10,7 +10,6 @@
       <span ng-if="a.action === 'remove'" class="remove action">remove {{a.id}}</span>
     </span>
   </div>
-  <button ng-click="success()">success!</button>
 
   <h4><?php echo plugin_lang_get( 'prioritized_items' )?> ({{itemsInBacklog.length}})</h4>
   <div>

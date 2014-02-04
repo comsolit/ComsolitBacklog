@@ -114,7 +114,7 @@ st      }
 	  };
 	}]);
 
-  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, $log){
+  comsolitBacklog.controller('comsolitBacklogCtrl', function($scope, backlog, $log, $http){
 
     var postQueue = [];
 
@@ -143,18 +143,27 @@ st      }
       if(postQueue.push(action) === 1) post(action);
     }
 
-    function postSuccess(){
+    function postSuccess(data, status, headers, config){
+      // TODO: mantis does not send a correct http error code, so we still might need to check for a mantis error page here
+      console.log('postSuccess. data: ' + data);
       postQueue.shift();
       if(postQueue.length) post(postQueue[0]);
     }
 
-    function post(action){
-      $log.info('post ' + angular.toJson(action));
-      // TODO
+    function postError(data, status, headers){
+      $log.error('postError status: ' . status);
+      $log.error(headers);
+      $log.error(data);
+      // TODO: display a modal with all error details to the user and ask him to reload the page
     }
 
-    // TODO remove from scope, is here just for testing
-    $scope.success = postSuccess;
+    function post(action){
+      $log.info('post ' + angular.toJson(action));
+      $http.post(
+        'plugin.php?page=ComsolitBacklog/backlog_action',
+        action
+      ).success(postSuccess).error(postError);
+    }
   });
 
   comsolitBacklog.filter('prioritizedItems', function(){
