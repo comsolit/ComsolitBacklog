@@ -14,7 +14,7 @@ describe("Comsolit Backlog Spec", function() {
     var getEmbeddedData, querySelectorMock;
 
     beforeEach(function(){
-      querySelectorMock = jasmine.createSpy("querySelectorSpy").andReturn({innerHTML: "hallo Welt innerHTML"});
+      querySelectorMock = jasmine.createSpy("querySelectorSpy").and.returnValue({innerHTML: "hallo Welt innerHTML"});
       var documentMock = [{querySelector: querySelectorMock}];
 
       module(function($provide){
@@ -33,17 +33,17 @@ describe("Comsolit Backlog Spec", function() {
 
     it("selector contains name", function(){
       getEmbeddedData('hi');
-      expect(querySelectorMock.mostRecentCall.args[0]).toContain('hi');
+      expect(querySelectorMock.calls.mostRecent().args[0]).toContain('hi');
     });
 
     it("selector contains context selector", function(){
       getEmbeddedData('hi', '.mycontext');
-      expect(querySelectorMock.mostRecentCall.args[0]).toContain('.mycontext ');
+      expect(querySelectorMock.calls.mostRecent().args[0]).toContain('.mycontext ');
     });
 
     it("selector contains context selector", function(){
       getEmbeddedData('hi', '#mycontext');
-      expect(querySelectorMock.mostRecentCall.args[0]).toEqual('#mycontext script.embedded-json-data[data-name="hi"]');
+      expect(querySelectorMock.calls.mostRecent().args[0]).toEqual('#mycontext script.embedded-json-data[data-name="hi"]');
     });
 
     it("returns innerHTML", function(){
