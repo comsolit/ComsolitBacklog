@@ -84,15 +84,87 @@ class Backlog {
     }
 
     public function moveToTop($id) {
+        $subQuery = $this->subselectIfPositions(
+            'min(positions.backlog_position)/2',
+            'pow(2, 16)'
+        );
+        $query = self::updateBug($subQuery);
+        db_query_bound( $query, array($this->configuration->getRequired('prioritizedStatus'), $id));
     }
 
     public function moveBelow($id, $targetId) {
+        $subQuery = $this->subselectIfPositions(
+            '0.5 * (min(positions.backlog_position) + ' . self::subselectTargetPosition($targetId) . ')',
+            'pow(2, 16) + ' . self::subselectTargetPosition($targetId),
+            self::subselectTargetPosition($targetId)
+        );
+        $query = self::updateBug($subQuery);
+        db_query_bound( $query, array($this->configuration->getRequired('prioritizedStatus'), $id));
     }
 
     public function remove($id) {
+        $query = self::updateBug(0);
+        db_query_bound( $query, array($this->configuration->getRequired('unprioritizedStatus'), $id));
     }
 
+    /**
+     * Build an instance of self from global Variables and global functions
+     *
+     * @return \Comsolit\Backlog\Backlog
+     */
     public static function fromGlobalData() {
         return new Backlog(helper_get_current_project(), auth_get_current_user_id(), Configuration::fromGlobalVariables());
+    }
+
+    /**
+     * Build Subquery named 'positions' to select all backlog_position values of the current backlog greater than $minPos
+     *
+     * @param number $minPos Can also be a subquery, default to zero
+     * @return string
+     */
+    private function subselectPositions($minPos = 0) {
+        return '(SELECT backlog_position FROM mantis_bug_table JOIN mantis_category_table on category_id = mantis_category_table.id '
+            .'WHERE mantis_category_table.name IN (' . self::implodeQuoted($this->configuration->getRequired('categories')) . ')'
+            .' AND  mantis_bug_table.status = ' . (int)$this->configuration->getRequired('prioritizedStatus')
+            .' AND mantis_bug_table.project_id = ' . (int)$this->projectId
+            .' AND backlog_position > ' . $minPos . ')'
+            .' as positions';
+    }
+
+    private function subselectIfPositions($then, $else, $minPos = 0) {
+        // then and else are 'inverse' because the function contract is about whether there are backlog_position rows
+        return '(SELECT * FROM (SELECT IF(min(positions.backlog_position) is null, '
+            .$else .', '
+            .$then .') FROM '
+            .$this->subselectPositions($minPos) . ') as newvalue)';
+    }
+
+    /**
+     * Build a subselect string to select the backlog_position of the target item
+     *
+     * @param int $targetId
+     * @return string
+     */
+    private static function subselectTargetPosition($targetId) {
+        return '(SELECT backlog_position FROM ' . db_get_table('mantis_bug_table') . ' WHERE id = '.(int)$targetId.')';
+    }
+
+    /**
+     * Build an update query string to move a backlog item
+     *
+     * @param string $pos a compley subquery string to calculate the new position
+     * @return string
+     */
+    private static function updateBug($pos) {
+        return 'UPDATE ' . db_get_table('mantis_bug_table')
+            . ' SET status = ' .db_param()
+            . ' , backlog_position = ' . $pos
+            . ' WHERE id = ' .db_param();
+    }
+
+    private static function implodeQuoted(array $values) {
+        return implode(',', array_map(function($x){
+            return '"'.$x.'"';
+        }, $values));
     }
 }
