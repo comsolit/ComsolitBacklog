@@ -114,7 +114,70 @@
     };
   }]);
 
-  comsolitBacklog.service('postQueue', function($http, $log){
+  comsolitBacklog.factory('fatalErrorModal', function($document){
+    return new function FatalErrorModal(){
+
+      function createElement(name) {
+        return angular.element($document[0].createElement(name));
+      }
+
+      function createModal(content) {
+        var
+          modalOutter = createElement('div'),
+          modalInner = createElement('div');
+
+        modalOutter.css({
+          position: 'fixed',
+          top: '0',
+          left: '0',
+          width: '100%',
+          height: '100%',
+          'background-color': 'rgba(0, 0, 0, 0.8)',
+          'z-index': '1000'
+        });
+
+        modalInner.css({
+          opacity: '1',
+          'background-color': 'rgba(255, 255, 255, 1)',
+          color: 'rgba(0, 0, 0, 1)'
+        });
+
+        return modalOutter
+          .append('<div style="color:red;text-align:center;font-weight:bold;font-size:2em">An error occured. Please reload the page!</div>')
+          .append(modalInner.append(content));
+      }
+
+      function bodyAppend(element) {
+        return angular.element($document[0].getElementsByTagName('body')[0]).append(element);
+      }
+
+      function showModal(content) {
+        bodyAppend(createModal(content));
+      }
+
+      function row(k, v) {
+        return '<tr><td>' + k + '</td><td>' + v + '</td>';
+      }
+
+      function exceptionDataToTable(e) {
+        return '<table>'
+          + row('message', e['message'])
+          + row('file', e['file'] + '(' + e['line'] + ')')
+          + row('trace', e['traceString']).replace(/\n/g, '<br />')
+          + '</table>';
+      }
+
+      this.showHtmlPage = function(data, status, headers) {
+        showModal(data);
+      };
+
+      this.showErrorData = function(data, status, headers) {
+        showModal(exceptionDataToTable(data));
+      };
+    };
+  });
+
+  comsolitBacklog.service('postQueue', function($http, $log, fatalErrorModal){
     var queue = this.queue = []
 
     this.push = function(action){
@@ -123,19 +186,19 @@
 
     function postSuccess(data, status, headers, config){
       // TODO: mantis does not send a correct http error code, so we still might need to check for a mantis error page here
-      console.log('postSuccess. data: ' + data);
+      var contentType = headers('Content-Type');
+      if(contentType !== 'application/json') {
+        $log.error('invalid Content-Type: ' + contentType);
+        if(new RegExp('html', 'i').test('html')) fatalErrorModal.showHtmlPage(data, status, headers);
+        return;
+      }
       queue.shift();
       if(queue.length) post(queue[0]);
     }
 
     function postError(data, status, headers){
       $log.error('postError status: ' . status);
-      $log.error(headers);
-      $log.error(data);
-      // TODO: display a modal with all error details to the user and ask him to reload the page
-      // maybe trigger an angular event here and have a directive observe this event?
-      // this would imply that the controller hands the scope over to this service
-      // a service can not get a scope via dependency injection
+      fatalErrorModal.showErrorData(data);
     }
 
     function post(action){

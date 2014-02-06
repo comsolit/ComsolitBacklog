@@ -49,7 +49,7 @@ function comsolitBacklogExceptionToArray(Exception $e) {
         'code' => $e->getCode(),
         'file' => $e->getFile(),
         'line' => $e->getLine(),
-        'traceString' => $e->getTrace(),
+        'traceString' => $e->getTraceAsString(),
         'trace' => $e->getTrace(),
         'previous' => method_exists($e, 'getPrevious') && $e->getPrevious()
         ? comsolitBacklogExceptionToArray($e->getPrevious())
