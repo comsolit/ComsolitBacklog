@@ -1,4 +1,5 @@
 <?php
+
 class ComsolitBacklogPlugin extends MantisPlugin {
 
     private static $javaScriptResources = array(
@@ -34,11 +35,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
         );
     }
 
-    /**
-     * init - requires the api files
-     */
     public function init() {
-        require_once 'api/comsolitbacklog_print_api.php';
     }
 
     /**
