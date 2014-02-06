@@ -28,8 +28,7 @@ print_recently_visited();
   <h1><?php echo plugin_lang_get('menuname');?></h1>
 
   <?php 
-    $backlog = new Backlog(helper_get_current_project(), auth_get_current_user_id(), Configuration::fromGlobalVariables());
-    echo EmbeddedJsonScriptTag::create('backlogItems', $backlog->getBacklogItems());
+    echo EmbeddedJsonScriptTag::create('backlogItems', Backlog::fromGlobalData()->getBacklogItems());
     require __DIR__ . '/../templates/backlog.php';
   ?>
 </div>

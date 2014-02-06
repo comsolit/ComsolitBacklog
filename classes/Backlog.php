@@ -83,4 +83,16 @@ class Backlog {
         return $arrayRows;
     }
 
+    public function moveToTop($id) {
+    }
+
+    public function moveBelow($id, $targetId) {
+    }
+
+    public function remove($id) {
+    }
+
+    public static function fromGlobalData() {
+        return new Backlog(helper_get_current_project(), auth_get_current_user_id(), Configuration::fromGlobalVariables());
+    }
 }

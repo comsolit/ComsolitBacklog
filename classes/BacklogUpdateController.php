@@ -1,24 +1,27 @@
 <?php namespace Comsolit\Backlog;
 
+require_once __DIR__ . '/Backlog.php';
+
 class BacklogUpdateController {
 
-    private $configuration;
-    private $projectId;
+    private $backlog;
 
-    public function __construct($projectId, Configuration $configuration) {
-        $this->projectId = $projectId;
-        $this->configuration = $configuration;
+    public function __construct(Backlog $backlog) {
+        $this->backlog = $backlog;
     }
 
     public function moveToTop($id) {
+        $this->backlog->moveToTop($id);
         return 'moveToTop: ' . $id;
     }
 
     public function moveBelow($id, $targetId) {
+        $this->backlog->moveBelow($id, $targetId);
         return 'moveBelow: ' . $id. ', '.$targetId;
     }
 
     public function remove($id) {
+        $this->backlog->remove($id);
         return 'remove: ' . $id;
     }
 
@@ -36,8 +39,8 @@ class BacklogUpdateController {
         }
     }
 
-    public static function run(ActionData $actionData, $projectId, Configuration $configuration) {
-        $ctrl = new self($projectId, $configuration);
+    public static function run(ActionData $actionData, Backlog $backlog) {
+        $ctrl = new self($backlog);
         $result = $ctrl->callAction($actionData);
         // TODO check for rebalancing needed
         return $result;

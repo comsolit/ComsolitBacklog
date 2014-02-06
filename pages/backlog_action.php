@@ -3,6 +3,7 @@
 use Comsolit\Backlog\ActionData;
 use Comsolit\Backlog\BacklogUpdateController;
 use Comsolit\Backlog\Configuration;
+use Comsolit\Backlog\Backlog;
 require_once 'core.php';
 require_once __DIR__ . '/../classes/ActionData.php';
 require_once __DIR__ . '/../classes/BacklogUpdateController.php';
@@ -40,7 +41,7 @@ function comsolitBacklogActionDo() {
     $configuration = Configuration::fromGlobalVariables();
     $projectId = 1; // TODO!!!!!!!!!!!!
     
-    return BacklogUpdateController::run($actionData, $projectId, $configuration);
+    return BacklogUpdateController::run($actionData, Backlog::fromGlobalData());
 }
 
 function comsolitBacklogExceptionToArray(Exception $e) {
