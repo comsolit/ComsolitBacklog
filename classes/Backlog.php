@@ -44,10 +44,36 @@ class Backlog {
         'backlog_position',
     );
 
+    private $projectId;
+    private $userId;
+    private $configuration;
+
+    public function __construct($projectId, $userId, Configuration $configuration) {
+        $this->projectId = $projectId;
+        $this->userId = $userId;
+        $this->configuration = $configuration;
+    }
+
+    private function getBugRows() {
+        $f_page_number = 0;
+        $t_per_page = -1;
+        $t_page_count = 0;
+        $t_bug_count = 0;
+        $c_filter = array(
+            '_view_type' => 'advanced',
+            FILTER_PROPERTY_CATEGORY => $this->configuration->getRequired('categories'),
+            FILTER_PROPERTY_STATUS_ID => array(
+                $this->configuration->getRequired('prioritizedStatus'),
+                $this->configuration->getRequired('unprioritizedStatus')
+            )
+        );
+
+        return filter_get_bug_rows($f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter, $this->projectId, $this->userId);
+    }
+
     public function getBacklogItems() {
-        $rows = filter_get_bug_rows($f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter [$t_box_title] );
         $arrayRows = array();
-        foreach($rows as $row) {
+        foreach($this->getBugRows() as $row) {
             $arrayRow = array();
             foreach(self::$backlogItemColumns as $name) {
                 $arrayRow[$name] = $row->$name;
@@ -56,4 +82,5 @@ class Backlog {
         }
         return $arrayRows;
     }
+
 }
