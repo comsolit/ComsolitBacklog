@@ -1,7 +1,5 @@
 <?php namespace Comsolit\Backlog;
 
-require_once ('filter_api.php');
-
 class Backlog {
 
     private static $backlogItemColumns = array(
