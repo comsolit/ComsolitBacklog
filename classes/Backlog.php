@@ -52,6 +52,21 @@ class Backlog {
         $this->configuration = $configuration;
     }
 
+    public function getProjectId() {
+        return $this->projectId;
+    }
+
+    public function getUserId() {
+        return $this->userId;
+    }
+
+    /**
+     * @return Configuration
+     */
+    public function getConfiguration() {
+        return $this->configuration;
+    }
+
     private function getBugRows() {
         $f_page_number = 0;
         $t_per_page = -1;

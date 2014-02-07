@@ -9,7 +9,7 @@ $backlog = Backlog::fromGlobalData();
 ?>
 
 <div ng-app="comsolitBacklog" ng-controller="comsolitBacklogCtrl">
-  <h1><?php echo plugin_lang_get('menuname');?></h1>
+  <h1><?php echo plugin_lang_get('menuname');?> for Project <?php echo project_get_name($backlog->getProjectId()); ?></h1>
   <div class="comsolitBacklogArea">
     <h3><?php echo plugin_lang_get( 'prioritized_items' )?> ({{itemsInBacklog.length}})</h3>
     <table style="width:100%" cellspacing="1">
