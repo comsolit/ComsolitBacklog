@@ -296,6 +296,7 @@
 
         var takeAction = scope.moveItem(dragId, dropId);
         if(takeAction) scope.$apply();
+        e.preventDefault(); // this makes firefox happy
       });
     };
   });
