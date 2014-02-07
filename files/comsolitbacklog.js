@@ -198,6 +198,7 @@
 
     function postError(data, status, headers){
       $log.error('postError status: ' . status);
+      $log.error(data);
       fatalErrorModal.showErrorData(data);
     }
 
