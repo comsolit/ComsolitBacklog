@@ -1,5 +1,11 @@
 <?php
 
+use Comsolit\Backlog\Configuration;
+use Comsolit\Backlog\Backlog;
+
+require_once __DIR__ . '/classes/Configuration.php';
+require_once __DIR__ . '/classes/Backlog.php';
+
 class ComsolitBacklogPlugin extends MantisPlugin {
 
     private static $javaScriptResources = array(
@@ -31,11 +37,18 @@ class ComsolitBacklogPlugin extends MantisPlugin {
     public function hooks() {
         return array (
             'EVENT_MENU_MAIN_FRONT' => 'add_to_main_menu',
-            'EVENT_LAYOUT_RESOURCES' => 'printResourcesInHead'
+            'EVENT_LAYOUT_RESOURCES' => 'printResourcesInHead',
+            'EVENT_UPDATE_BUG' => 'resetBacklogPositionOnStatusChange'
         );
     }
 
     public function init() {
+    }
+
+    public function resetBacklogPositionOnStatusChange($event, $bugData, $id) {
+        if($bugData->status != Configuration::fromGlobalVariables()->getRequired('prioritizedStatus')) {
+            Backlog::fromGlobalData()->remove($id);
+        }
     }
 
     /**
