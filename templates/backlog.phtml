@@ -4,6 +4,8 @@ use Comsolit\Backlog\Backlog;
 require_once __DIR__ . '/../classes/Backlog.php';
 require_once __DIR__ . '/../classes/Configuration.php';
 require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
+
+$backlog = Backlog::fromGlobalData();
 ?>
 
 <div ng-app="comsolitBacklog" ng-controller="comsolitBacklogCtrl">
@@ -69,5 +71,5 @@ require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
       <span ng-if="a.action === 'remove'" class="remove action">remove {{a.id}}</span>
     </span>
   </div>
-  <?php echo EmbeddedJsonScriptTag::create('backlogItems', Backlog::fromGlobalData()->getBacklogItems()); ?>
+  <?php echo EmbeddedJsonScriptTag::create('backlogItems', $backlog->getBacklogItems()); ?>
 </div>
