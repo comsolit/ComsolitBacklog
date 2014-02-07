@@ -1,5 +1,12 @@
 @CHARSET "UTF-8";
 
+.comsolitBacklogDraggableGrab {
+  cursor: move;
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
 .comsolitBacklogArea thead tr th {
   background-color: #c8c8e8;
 }
