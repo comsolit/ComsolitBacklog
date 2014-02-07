@@ -58,7 +58,18 @@ $backlog = Backlog::fromGlobalData();
           <td style="width:10em"><button ng-click="moveItem(item.id)">to first position</button></td>
         </tr>
       </tbody>
-    </table
+    </table>
+    <div>
+      Conditions for Issues in this area:
+        Status:
+          <?php
+            echo get_enum_element('status', $backlog->getConfiguration()->getRequired('unprioritizedStatus'), $backlog->getUserId(), $backlog->getProjectId);
+          ?>,
+        Category in:
+        <?php
+          echo implode(',', $backlog->getConfiguration()->getRequired('categories'));
+        ?>
+    </div>
   </div>
 
   <div style="min-height:4em" ng-show="postQueue.length > 2">
