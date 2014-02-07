@@ -89,7 +89,7 @@ class Backlog {
             'pow(2, 16)'
         );
         $query = self::updateBug($subQuery);
-        db_query_bound( $query, array($this->configuration->getRequired('prioritizedStatus'), $id));
+        db_query_bound($query, array($this->configuration->getRequired('prioritizedStatus'), $id));
     }
 
     public function moveBelow($id, $targetId) {
@@ -99,14 +99,64 @@ class Backlog {
             self::subselectTargetPosition($targetId)
         );
         $query = self::updateBug($subQuery);
-        db_query_bound( $query, array($this->configuration->getRequired('prioritizedStatus'), $id));
+        db_query_bound($query, array($this->configuration->getRequired('prioritizedStatus'), $id));
     }
 
     public function remove($id) {
         $query = self::updateBug(0);
-        db_query_bound( $query, array($this->configuration->getRequired('unprioritizedStatus'), $id));
+        db_query_bound($query, array($this->configuration->getRequired('unprioritizedStatus'), $id));
     }
 
+    /**
+     * A rebalancing operation is needed if the minimum backlog_position distance between two items is below a certain limit.
+     *
+     * @param number $minimumDistance
+     * @return boolean
+     */
+    public function isRebalancingNeeded($minimumDistance = 1) {
+        //WHERE a.status = 40 AND a.backlog_position > 0 and a.project_id = 1
+        $query = 'SELECT COUNT(*) > 0 as rebalancingNeeded FROM ' . db_get_table('mantis_bug_table') . ' AS a '
+            .' JOIN ' . db_get_table('mantis_bug_table') . ' as b ON '
+                .'a.status = b.status AND a.project_id = b.project_id AND a.id < b.id AND b.backlog_position > 0 '
+                .' AND abs(a.backlog_position - b.backlog_position) < ' . db_param()
+            .' JOIN mantis_category_table as acat on a.category_id = acat.id'
+                .' AND acat.name IN (' . self::implodeQuoted($this->configuration->getRequired('categories')) . ')'
+            .' JOIN mantis_category_table as bcat on b.category_id = bcat.id'
+                .' AND bcat.name IN (' . self::implodeQuoted($this->configuration->getRequired('categories')) . ')'
+            .' WHERE a.status = '.db_param()
+            .' AND a.project_id = '.db_param()
+            .' AND a.backlog_position > 0';
+
+        return (bool)db_result(db_query_bound($query, array(
+            $minimumDistance,
+            $this->configuration->getRequired('prioritizedStatus'),
+            $this->projectId
+        )));
+    }
+
+    public function rebalance() {
+        $query = 'UPDATE mantis_bug_table SET backlog_position = '
+            .'pow(2, 16) * (SELECT cnt FROM '
+                .'(SELECT id, '
+                    .'(SELECT count(*) FROM mantis_bug_table as b WHERE b.backlog_position <= a.backlog_position AND ' . $this->whereConditions('b'). ') '
+                .'as cnt FROM mantis_bug_table as a WHERE ' . $this->whereConditions('a'). ') '
+            .'as c WHERE c.id = mantis_bug_table.id) WHERE ' . $this->whereConditions('mantis_bug_table');
+        db_query($query);
+    }
+
+    /** Builds part of an SQL WHERE condition to constrain to the prioritized items of the current project
+     *
+     * @param unknown $table prefix for all columns used in the conditions
+     * @return string
+     */
+    private function whereConditions($table) {
+        return ' '.
+            $table . '.status = ' . (int)$this->configuration->getRequired('prioritizedStatus')
+            . ' AND ' . $table . '.project_id = ' . (int)$this->projectId
+            . ' AND ' . $table . '.backlog_position > 0 '
+            . ' AND EXISTS (SELECT * FROM mantis_category_table WHERE mantis_category_table.id = '
+                . $table . '.category_id AND mantis_category_table.name IN (' . self::implodeQuoted($this->configuration->getRequired('categories')) . ')) ';
+    }
     /**
      * Build an instance of self from global Variables and global functions
      *

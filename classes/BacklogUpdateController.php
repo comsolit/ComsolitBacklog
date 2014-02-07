@@ -12,11 +12,13 @@ class BacklogUpdateController {
 
     public function moveToTop($id) {
         $this->backlog->moveToTop($id);
+        if($this->backlog->isRebalancingNeeded()) $this->backlog->rebalance();
         return 'moveToTop: ' . $id;
     }
 
     public function moveBelow($id, $targetId) {
         $this->backlog->moveBelow($id, $targetId);
+        if($this->backlog->isRebalancingNeeded()) $this->backlog->rebalance();
         return 'moveBelow: ' . $id. ', '.$targetId;
     }
 
