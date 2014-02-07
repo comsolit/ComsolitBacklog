@@ -16,7 +16,6 @@ require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
           <th>nr</th>
           <th>ID</th>
           <th>Summary</th>
-          <th>Storypoints</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -31,7 +30,6 @@ require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
           <td ng-bind="$index + 1"></td>
           <td><a ng-href="view.php?id={{item.id}}" ng-bind="item.id"/></td>
           <td ng-bind="item.summary"></td>
-          <td ng-bind="item.points"></td>
           <td style="width:10em"><button ng-click="removeItem(item.id)">remove</button></td>
         </tr>
       </tbody>
@@ -46,7 +44,6 @@ require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
         <tr>
           <th>ID</th>
           <th>Summary</th>
-          <th>Storypoints</th>
           <th>Priority</th>
           <th>Action</th>
         </tr>
@@ -55,7 +52,6 @@ require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
         <tr style="background-color:green" ng-repeat="item in (itemsNotInBacklog = (backlogItems|prioritizedItems:false))|filter:unprioritizedTextFilter|orderBy:'-priority' track by item.id"  comsolit-backlog-draggable="comsolitbldragged" data-id="{{item.id}}" class="comsolitBacklogDraggableGrab">
           <td><a ng-href="view.php?id={{item.id}}" ng-bind="item.id"/></td>
           <td ng-bind="item.summary"></td>
-          <td ng-bind="item.points"></td>
           <td ng-bind="item.priorityString"></td>
           <td style="width:10em"><button ng-click="moveItem(item.id)">to first position</button></td>
         </tr>
