@@ -249,6 +249,7 @@
     return function(scope, element, attributes) {
       var cssClassDragged = attributes['comsolitBacklogDraggable'];
 
+      element.attr('draggable', true);
       element.on('dragstart', function(e){
         var target = angular.element(e.target);
         e.dataTransfer.effectAllowed = 'move';

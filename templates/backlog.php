@@ -31,7 +31,7 @@
       </tbody>
 
       <tbody>
-        <tr style="background-color:green" ng-repeat="item in (itemsInBacklog = (backlogItems|prioritizedItems:true))|orderBy:'backlog_position' track by item.id" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" draggable="true" data-id="{{item.id}}">
+        <tr style="background-color:green" ng-repeat="item in (itemsInBacklog = (backlogItems|prioritizedItems:true))|orderBy:'backlog_position' track by item.id" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" data-id="{{item.id}}">
           <td ng-bind="$index + 1"></td>
           <td ng-bind="item.id"></td>
           <td ng-bind="item.summary"></td>
@@ -48,7 +48,7 @@
   <div>
     <table style="width:100%">
       <tbody>
-        <tr style="background-color:green" ng-repeat="item in (itemsNotInBacklog = (backlogItems|prioritizedItems:false))|filter:unprioritizedTextFilter track by item.id"  comsolit-backlog-draggable="comsolitbldragged" draggable="true" data-id="{{item.id}}">
+        <tr style="background-color:green" ng-repeat="item in (itemsNotInBacklog = (backlogItems|prioritizedItems:false))|filter:unprioritizedTextFilter track by item.id"  comsolit-backlog-draggable="comsolitbldragged" data-id="{{item.id}}">
           <td ng-bind="item.id"></td>
           <td ng-bind="item.summary"></td>
           <td ng-bind="item.points"></td>
