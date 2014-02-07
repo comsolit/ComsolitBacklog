@@ -7,7 +7,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
         'comsolitbacklog.js'
 	);
 
-    function register() {
+    public function register() {
         $this->name = 'ComsolitBacklog';        // Proper name of plugin
         $this->description = '';                // Short description of the plugin
         $this->page = '';                       // Default plugin page
@@ -22,7 +22,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
         $this->url = '';                        // Support webpage
     }
 
-    function schema() {
+    public function schema() {
         return array(
             array( 'AddColumnSQL', array( 'mantis_bug_table', 'backlog_position F NOTNULL DEFAULT 0' ))
         );
@@ -41,7 +41,7 @@ class ComsolitBacklogPlugin extends MantisPlugin {
     /**
      * adds backlog link to the main menu
      */
-    function add_to_main_menu($p_event) {
+    public function add_to_main_menu($p_event) {
         return array (
             '<a href="' . plugin_page( 'backlog' ) . '">' . plugin_lang_get( 'menuname' ) . '</a>'
         );
