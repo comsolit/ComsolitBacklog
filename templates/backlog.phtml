@@ -1,0 +1,75 @@
+<?php
+use Comsolit\Backlog\Util\EmbeddedJsonScriptTag;
+use Comsolit\Backlog\Backlog;
+require_once __DIR__ . '/../classes/Backlog.php';
+require_once __DIR__ . '/../classes/Configuration.php';
+require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
+?>
+
+<div ng-app="comsolitBacklog" ng-controller="comsolitBacklogCtrl">
+  <h1><?php echo plugin_lang_get('menuname');?></h1>
+  <div class="comsolitBacklogArea">
+    <h3><?php echo plugin_lang_get( 'prioritized_items' )?> ({{itemsInBacklog.length}})</h3>
+    <table style="width:100%" cellspacing="1">
+      <thead>
+        <tr>
+          <th>nr</th>
+          <th>ID</th>
+          <th>Summary</th>
+          <th>Storypoints</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr comsolit-backlog-droppable="comsolitbldragover">
+          <td colspan="99" style="min-heigth:2em;background-color:grey">first line</td>
+        </tr>
+      </tbody>
+
+      <tbody>
+        <tr style="background-color:green" ng-repeat="item in (itemsInBacklog = (backlogItems|prioritizedItems:true))|orderBy:'backlog_position' track by item.id" comsolit-backlog-draggable="comsolitbldragged" comsolit-backlog-droppable="comsolitbldragover" data-id="{{item.id}}">
+          <td ng-bind="$index + 1"></td>
+          <td ng-bind="item.id"></td>
+          <td ng-bind="item.summary"></td>
+          <td ng-bind="item.points"></td>
+          <td style="width:10em"><button ng-click="removeItem(item.id)">remove</button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="comsolitBacklogArea">
+    <h3><?php echo plugin_lang_get( 'unprioritized_items' )?> ({{itemsNotInBacklog.length}})</h3>
+    <label>Filter:<input type="text" ng-model="unprioritizedTextFilter" /><button ng-click="unprioritizedTextFilter=''">reset</button></label>
+    <table style="width:100%">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Summary</th>
+          <th>Storypoints</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background-color:green" ng-repeat="item in (itemsNotInBacklog = (backlogItems|prioritizedItems:false))|filter:unprioritizedTextFilter track by item.id"  comsolit-backlog-draggable="comsolitbldragged" data-id="{{item.id}}">
+          <td ng-bind="item.id"></td>
+          <td ng-bind="item.summary"></td>
+          <td ng-bind="item.points"></td>
+          <td style="width:10em"><button ng-click="moveItem(item.id)">to first position</button></td>
+        </tr>
+      </tbody>
+    </table
+  </div>
+
+  <div style="min-height:4em" ng-show="postQueue.length > 2">
+    Server Request Queue ({{postQueue.length}}):
+    <span ng-repeat="a in postQueue">
+      <span ng-if="a.action === 'move'" class="move action">
+        <span>move {{a.dragId}}</span>
+        <span ng-if="a.dropId">under {{a.dropId}}</span>
+      </span>
+      <span ng-if="a.action === 'remove'" class="remove action">remove {{a.id}}</span>
+    </span>
+  </div>
+  <?php echo EmbeddedJsonScriptTag::create('backlogItems', Backlog::fromGlobalData()->getBacklogItems()); ?>
+</div>

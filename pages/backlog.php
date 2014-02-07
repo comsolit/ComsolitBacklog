@@ -1,15 +1,8 @@
 <?php
 
-use Comsolit\Backlog\Backlog;
-use Comsolit\Backlog\Util\EmbeddedJsonScriptTag;
-use Comsolit\Backlog\Configuration;
-
 require_once ('core.php');
 require_once ('compress_api.php');
 require_once ('last_visited_api.php');
-require_once __DIR__ . '/../classes/Backlog.php';
-require_once __DIR__ . '/../classes/Configuration.php';
-require_once __DIR__ . '/../classes/Util/EmbeddedJsonScriptTag.php';
 
 auth_ensure_user_authenticated();
 
@@ -22,18 +15,8 @@ html_robots_noindex ();
 html_page_top1(plugin_lang_get('menuname'));
 html_page_top2();
 print_recently_visited();
-?>
 
-<div>
-  <h1><?php echo plugin_lang_get('menuname');?></h1>
-
-  <?php 
-    echo EmbeddedJsonScriptTag::create('backlogItems', Backlog::fromGlobalData()->getBacklogItems());
-    require __DIR__ . '/../templates/backlog.php';
-  ?>
-</div>
-
-<?php
+require __DIR__ . '/../templates/backlog.phtml';
 
 html_status_legend();
 html_page_bottom ();

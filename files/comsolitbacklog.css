@@ -1,7 +1,12 @@
 @CHARSET "UTF-8";
 
-.comsolitbldragover {
+.comsolitBacklogArea thead tr th {
+  background-color: #c8c8e8;
+}
 
+.comsolitBacklogArea {
+  border: 1px solid black;
+  margin-bottom: 1em;
 }
 
 .comsolitbldragover td {
