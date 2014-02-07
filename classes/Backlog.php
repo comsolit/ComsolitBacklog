@@ -78,6 +78,7 @@ class Backlog {
             foreach(self::$backlogItemColumns as $name) {
                 $arrayRow[$name] = $row->$name;
             }
+            $arrayRow['priorityString'] = get_enum_element('priority', $row->priority, $this->userId, $this->project_id );
             $arrayRows[] = $arrayRow;
         }
         return $arrayRows;
