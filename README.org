@@ -26,4 +26,36 @@ your config_inc.php:
 - $g_comsolitBacklog_categories - (array of string) names of categories that
   may appear in either area
 
+** Implementation
+
+The plugin adds an additional decimal (float) column 'backlog_position' to the
+mantis_bug_table. This value indicates the position of the Issue in the
+backlog with lower values indicating higher priority or position.
+
+When an item is moved in the backlog, the new backlog_position value is
+calculated to be in the middle of the item before and after it, i.e.:
+
+backlog_position=.5*(issue_before.backlog_position + issue_after.backlog_position)
+
+If the item is moved to the top of the list than issue_before.backlog_position
+is assumed ot be zero.
+
+If the item is moved to the bottom of the list than
+
+backlog_position=issue_before.backlog_position + pow(2,16)
+
+After enough movement operations it can happen that the limit of the databases
+floating point precision is reached. Therefor a 'rebalance' operation is
+performed when the minimum distance between two items falls below one. During
+rebalancing all Issues in the backlog get new backlog_position numbers which
+are multiples of pow(2,16).
+
+** Development Status
+
+The code has only been tested against MySQL.
+
+** Third party libraries
+
+The plugin uses [[http://angularjs.org][AngularJS]] as the only JavaScript library and [[http://jasmine.github.io][Jasmine 2]] for
+testing.
 
