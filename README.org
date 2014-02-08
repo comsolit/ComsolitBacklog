@@ -1,0 +1,29 @@
+* Mantis Scrum backlog
+
+** Overview
+
+This plugin allows to prioritize Issues of a project relative to each other
+and thus to manage a Scrum/Agile backlog of user stories.
+
+The plugin adds the menu item "backlog". The view of the backlog is separated
+in prioritized (at the top) and unprioritized Issues (at the bottom). The top
+area is the "backlog". Items in the bottom area have not yet been added to the
+backlog. Issues can be moved from the bottom area to the backlog either by the
+action buttons in each line or by drag-and-drop.
+
+Inside the backlog the items can be moved around by drag-and-drop.
+
+** Installation
+
+Place the content of this plugin inside your mantis installation under
+plugins/ComsolitBacklog. You also need to configure three global variables in
+your config_inc.php:
+
+- $g_comsolitBacklog_prioritizedStatus - (int) status to give to prioritized
+  issues
+- $g_comsolitBacklog_unprioritizedStatus - (int) status of items that may
+  appear in the unprioritized area
+- $g_comsolitBacklog_categories - (array of string) names of categories that
+  may appear in either area
+
+
