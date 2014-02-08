@@ -17,7 +17,7 @@
 describe("Comsolit Backlog Spec", function() {
 
   beforeEach(function(){
-	module('comsolitBacklog');
+    module('comsolitBacklog');
   });
 
   it("Angular Module is defined", function(){
@@ -66,41 +66,41 @@ describe("Comsolit Backlog Spec", function() {
   });
 
   describe("items", function(){
-	beforeEach(function(){
-	  module(function($provide){
-		$provide.constant('getEmbeddedData', function(){
-		  return "{\"hallo\": 42}";
-		});
-	  });
-	});
+    beforeEach(function(){
+      module(function($provide){
+        $provide.constant('getEmbeddedData', function(){
+          return "{\"hallo\": 42}";
+        });
+      });
+    });
 
     it("items parses JSON", inject(function(backlogItems){
-	  expect(backlogItems).toEqual({hallo:42});
-	}));
+      expect(backlogItems).toEqual({hallo:42});
+    }));
   });
 
   describe("Backlog", function(){
-	var backlog, items, moveItem, removeItem;
+    var backlog, items, moveItem, removeItem;
 
-	function getItemById(id){
-	  for(var i = 0; i < items.length; ++i){
-		if(items[i].id === id) return items[i];
-	  }
-	  throw "no item with id " + id;
-	}
+    function getItemById(id){
+      for(var i = 0; i < items.length; ++i){
+        if(items[i].id === id) return items[i];
+      }
+      throw "no item with id " + id;
+    }
 
     function getPosById(id){
       return getItemById(id).backlog_position;
     }
 
-	function expectBacklog(expected){
-	  var actual = items
-		.filter(function(x){return x.backlog_position>0;})
-	    .sort(function(a,b){return a.backlog_position-b.backlog_position;})
-	    .map(function(x){return x.id;});
+    function expectBacklog(expected){
+      var actual = items
+        .filter(function(x){return x.backlog_position>0;})
+        .sort(function(a,b){return a.backlog_position-b.backlog_position;})
+        .map(function(x){return x.id;});
 
-	  expect(actual).toEqual(expected);
-	}
+      expect(actual).toEqual(expected);
+    }
 
     function moveItems(moves){
       var result;
@@ -118,16 +118,16 @@ describe("Comsolit Backlog Spec", function() {
     }
 
     function beforeEachInitializer(initItems){
-	  module(function($provide){
+      module(function($provide){
         $provide.constant("backlogItems", initItems);
-	  });
+      });
 
-	  inject(function(_backlog_){
-		backlog = _backlog_;
-		items = backlog.items;
-		moveItem = backlog.moveItem;
-	    removeItem = backlog.removeItem;
-	  });
+      inject(function(_backlog_){
+        backlog = _backlog_;
+        items = backlog.items;
+        moveItem = backlog.moveItem;
+        removeItem = backlog.removeItem;
+      });
     }
 
     describe("with empty backlog", function(){
