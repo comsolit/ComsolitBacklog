@@ -13,6 +13,10 @@ action buttons in each line or by drag-and-drop.
 
 Inside the backlog the items can be moved around by drag-and-drop.
 
+#+CAPTION: Screenshot of the ComsolitBacklog Mantis plugin
+#+ATTR_HTML: :align center
+[[file:ComsolitBacklogScreenshot.png]]
+
 ** Installation
 
 Place the content of this plugin inside your mantis installation under
