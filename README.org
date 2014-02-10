@@ -54,9 +54,12 @@ performed when the minimum distance between two items falls below one. During
 rebalancing all Issues in the backlog get new backlog_position numbers which
 are multiples of pow(2,16).
 
-** Development Status
+** Requirements, Development Status and Disclaimer
 
-The code has only been tested against MySQL.
+- Minimum PHP version is 5.3
+- The code has only been tested against MySQL.
+- The code adds the core mantis table mantis_bug_table. This may harm your
+  ability to update mantis.
 
 ** Third party libraries
 
